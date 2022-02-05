@@ -1,6 +1,7 @@
 // Estructuras globales e inicializaciones
 var boxDrawer;          // clase para contener el comportamiento de la caja
 var meshDrawer;         // clase para contener el comportamiento de la malla
+var otherMeshDrawer;    // clase para contener el comportamiento de otra malla
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
@@ -26,6 +27,7 @@ function InitWebGL()
 	// Inicializar los shaders y buffers para renderizar	
 	boxDrawer  = new BoxDrawer();
 	meshDrawer = new MeshDrawer();
+	otherMeshDrawer = new MeshDrawer();
 	
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
@@ -83,12 +85,14 @@ function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
 	var mvp = GetModelViewProjection( perspectiveMatrix, 0, 0, transZ, rotX, autorot+rotY );
+	var otherMvp = GetModelViewProjection( perspectiveMatrix, 1, 0, transZ+1, rotX, autorot+rotY );
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 		
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	meshDrawer.draw( mvp );
+	otherMeshDrawer.draw(otherMvp);
 	if ( showBox.checked ) 
 	{
 		boxDrawer.draw( mvp );
@@ -254,6 +258,7 @@ function AutoRotate( param )
 function ShowTexture( param )
 {
 	meshDrawer.showTexture( param.checked );
+	otherMeshDrawer.showTexture( param.checked );
 	DrawScene();
 }
 
@@ -290,6 +295,7 @@ function LoadObj( param )
 			mesh.shiftAndScale( shift, scale );
 			var buffers = mesh.getVertexBuffers();
 			meshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
+			otherMeshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
 			DrawScene();
 		}
 		reader.readAsText( param.files[0] );
