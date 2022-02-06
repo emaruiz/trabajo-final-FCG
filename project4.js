@@ -6,6 +6,7 @@ var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
 var rotX=0, rotY=0, transZ=3, autorot=0; // rotaciones 
+var scaleOtherMesh=1;
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -84,8 +85,8 @@ function UpdateProjectionMatrix()
 function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
-	var mvp = GetModelViewProjection( perspectiveMatrix, 0, 0, transZ, rotX, autorot+rotY );
-	var otherMvp = GetModelViewProjection( perspectiveMatrix, 1, 0, transZ+1, rotX, autorot+rotY );
+	var mvp = GetModelViewProjection( perspectiveMatrix, 0, 0, transZ, 1, rotX, autorot+rotY );
+	var otherMvp = GetModelViewProjection( perspectiveMatrix, 1, 0, transZ+1, scaleOtherMesh, rotX, autorot+rotY );
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
@@ -322,3 +323,9 @@ function LoadTexture( param )
 	}
 }
 
+// Control de tamaño
+function SetSize( param )
+{
+	scaleOtherMesh = param.value;
+	DrawScene();
+}

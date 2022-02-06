@@ -48,7 +48,7 @@ TEXTURAS:
 // una matriz de 4x4 alamcenada como un arreglo en orden column-major. En el archivo project4.html ya está
 // implementada la función MatrixMult, pueden reutilizarla. 
 
-function GetModelViewProjection( projectionMatrix, translationX, translationY, translationZ, rotationX, rotationY )
+function GetModelViewProjection( projectionMatrix, translationX, translationY, translationZ, scaleUniform, rotationX, rotationY )
 {
 	// Objetivo: formar la matriz de transformación.
 
@@ -58,6 +58,14 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		translationX, translationY, translationZ, 1
+	];
+
+	// Matriz de escalado
+	var scale = [
+		scaleUniform, 0, 0, 0,
+		0, scaleUniform, 0, 0,
+		0, 0, scaleUniform, 0,
+		0, 0, 0, 1
 	];
 
 	// Matriz de rotacion en formato Column - Major
@@ -76,9 +84,10 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 		0, 0, 0, 1
 	]; 
 
-	var rotationMatrix = MatrixMult(rotY, rotX)
-	var rotAndTrans = MatrixMult(trans, rotationMatrix)
-	var mvp = MatrixMult( projectionMatrix, rotAndTrans );
+	var rotationMatrix = MatrixMult(rotY, rotX);
+	var rotAndScale = MatrixMult(scale, rotationMatrix);
+	var rotAndScaleAndTrans = MatrixMult(trans, rotAndScale);
+	var mvp = MatrixMult( projectionMatrix, rotAndScaleAndTrans );
 	
 	return mvp;
 }
