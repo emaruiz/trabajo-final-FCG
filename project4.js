@@ -6,7 +6,7 @@ var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
 var rotX=0, rotY=0, transZ=3, autorot=0; // rotaciones 
-var scaleOtherMesh=1;
+var scaleOtherMesh=1, transXOther=1, transZOther=transZ+1, angleOther=0;
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -86,7 +86,7 @@ function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
 	var mvp = GetModelViewProjection( perspectiveMatrix, 0, 0, transZ, 1, rotX, autorot+rotY );
-	var otherMvp = GetModelViewProjection( perspectiveMatrix, 1, 0, transZ+1, scaleOtherMesh, rotX, autorot+rotY );
+	var otherMvp = GetModelViewProjection( perspectiveMatrix, transXOther, 0, transZOther, scaleOtherMesh, rotX, autorot+rotY );
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
@@ -177,6 +177,7 @@ window.onload = function()
 	canvas.zoom = function( s ) 
 	{
 		transZ *= s/canvas.height + 1;
+		transZOther = transZ + 1;
 		UpdateProjectionMatrix();
 		DrawScene();
 	}
@@ -328,4 +329,31 @@ function SetSize( param )
 {
 	scaleOtherMesh = param.value;
 	DrawScene();
+}
+
+// Control de traslacion de planeta
+var timerRevolution;
+function RevolutionPlanet( param ){
+	if ( param.checked ) 
+	{
+		timerRevolution = setInterval( function() 
+			{
+				/*var v    = document.getElementById('rotation-speed').value;
+				autorot += 0.0005 * v;
+				if ( autorot > 2*Math.PI ) autorot -= 2*Math.PI;*/
+			
+				angleOther += 0.1;
+				transXOther = 0 + Math.cos(angleOther);
+				transZOther = transZ + Math.sin(angleOther);
+
+				// Reenderizamos
+				DrawScene();
+
+			}, 30
+		);
+	} 
+	else 
+	{
+		clearInterval( timerRevolution );
+	}
 }
