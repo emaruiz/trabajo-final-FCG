@@ -7,6 +7,7 @@ var perspectiveMatrix;	// matriz de perspectiva
 
 var rotX=0, rotY=0, transZ=3, autorot=0; // rotaciones 
 var scaleOtherMesh=1, transXOther=1, transZOther=transZ+1, angleOther=0;
+var angleIncrement=0.1;
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -338,22 +339,27 @@ function RevolutionPlanet( param ){
 	{
 		timerRevolution = setInterval( function() 
 			{
-				/*var v    = document.getElementById('rotation-speed').value;
-				autorot += 0.0005 * v;
-				if ( autorot > 2*Math.PI ) autorot -= 2*Math.PI;*/
-			
-				angleOther += 0.1;
+				angleOther += angleIncrement;//0.1;
 				transXOther = 0 + Math.cos(angleOther);
 				transZOther = transZ + Math.sin(angleOther);
+				if ( angleOther > 2*Math.PI ) angleOther -= 2*Math.PI;
 
 				// Reenderizamos
 				DrawScene();
 
 			}, 30
 		);
-	} 
+		document.getElementById('speed-value').disabled = false;
+	}
 	else 
 	{
 		clearInterval( timerRevolution );
+		document.getElementById('speed-value').disabled = true;
 	}
+}
+
+// Control de velocidad de traslacion
+function SetSpeed( param )
+{
+	angleIncrement = parseFloat(param.value);
 }
