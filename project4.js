@@ -5,9 +5,11 @@ var otherMeshDrawer;    // clase para contener el comportamiento de otra malla
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
-var rotX=0, rotY=0, transZ=3, autorot=0; // rotaciones 
-var scaleOtherMesh=1, transXOther=1, transZOther=transZ+1, angleOther=0;
+var autorot=0; // rotaciones 
 var angleIncrement=0.1;
+
+var sol = new CelestialBody(0, 0, 3, 1, 0, 0, 0, 1);
+var planeta = new CelestialBody(sol.transX+1, sol.transY, sol.transZ/*+1*/, 1, sol.rotX, sol.rotY, 0, 1);
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -64,12 +66,12 @@ function UpdateProjectionMatrix()
 {
 	// Parámetros para la matriz de perspectiva
 	var r = canvas.width / canvas.height;
-	var n = (transZ - 1.74);
+	var n = (sol.transZ - 1.74);
 
 	const min_n = 0.001;
 	
 	if ( n < min_n ) n = min_n;
-	var f = (transZ + 1.74);;
+	var f = (sol.transZ + 1.74);;
 	var fov = 3.145 * 60 / 180;
 	var s = 1 / Math.tan( fov/2 );
 
@@ -86,8 +88,8 @@ function UpdateProjectionMatrix()
 function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
-	var mvp = GetModelViewProjection( perspectiveMatrix, 0, 0, transZ, 1, rotX, autorot+rotY );
-	var otherMvp = GetModelViewProjection( perspectiveMatrix, transXOther, 0, transZOther, scaleOtherMesh, rotX, autorot+rotY );
+	var mvp = GetModelViewProjection( perspectiveMatrix, sol.transX, sol.transY, sol.transZ, sol.scale, sol.rotX, autorot+sol.rotY );
+	var otherMvp = GetModelViewProjection( perspectiveMatrix, planeta.transX, planeta.transY, planeta.transZ, planeta.scale, planeta.rotX, autorot+planeta.rotY );
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
@@ -177,8 +179,8 @@ window.onload = function()
 	// Evento de zoom (ruedita)
 	canvas.zoom = function( s ) 
 	{
-		transZ *= s/canvas.height + 1;
-		transZOther = transZ + 1;
+		sol.transZ *= s/canvas.height + 1;
+		planeta.transZ *= s/canvas.height + 1;
 		UpdateProjectionMatrix();
 		DrawScene();
 	}
@@ -202,8 +204,8 @@ window.onload = function()
 			// Si se mueve el mouse, actualizo las matrices de rotación
 			canvas.onmousemove = function() 
 			{
-				rotY += (cx - event.clientX)/canvas.width*5;
-				rotX += (cy - event.clientY)/canvas.height*5;
+				sol.rotY += (cx - event.clientX)/canvas.width*5;
+				sol.rotX += (cy - event.clientY)/canvas.height*5;
 				cx = event.clientX;
 				cy = event.clientY;
 				UpdateProjectionMatrix();
@@ -328,7 +330,7 @@ function LoadTexture( param )
 // Control de tamaño
 function SetSize( param )
 {
-	scaleOtherMesh = param.value;
+	planeta.scale = param.value;
 	DrawScene();
 }
 
@@ -339,10 +341,7 @@ function RevolutionPlanet( param ){
 	{
 		timerRevolution = setInterval( function() 
 			{
-				angleOther += angleIncrement;//0.1;
-				transXOther = 0 + Math.cos(angleOther);
-				transZOther = transZ + Math.sin(angleOther);
-				if ( angleOther > 2*Math.PI ) angleOther -= 2*Math.PI;
+				planeta.newPositioninOrbit( angleIncrement, sol.transX, sol.transZ );
 
 				// Reenderizamos
 				DrawScene();
