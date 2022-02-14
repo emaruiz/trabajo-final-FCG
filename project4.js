@@ -1,15 +1,20 @@
 // Estructuras globales e inicializaciones
 var boxDrawer;          // clase para contener el comportamiento de la caja
 var meshDrawer;         // clase para contener el comportamiento de la malla
-var otherMeshDrawer;    // clase para contener el comportamiento de otra malla
+var numberOfPlanets=2;
+var planetsMeshDrawer=[];
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
 var autorot=0; // rotaciones 
-var angleIncrement=0.1;
+var angleIncrement=[];
+angleIncrement[0] = 0.1;
+angleIncrement[1] = 0.1;
 
 var sol = new CelestialBody(0, 0, 3, 1, 0, 0, 0, 1);
-var planeta = new CelestialBody(sol.transX+1, sol.transY, sol.transZ/*+1*/, 1, sol.rotX, sol.rotY, 0, 1);
+var planetas=[];
+planetas[0] = new CelestialBody(sol.transX+1, sol.transY, sol.transZ, 1, sol.rotX, sol.rotY, 0, 1);
+planetas[1] = new CelestialBody(sol.transX+2, sol.transY, sol.transZ, 1, sol.rotX, sol.rotY, 0, 2);
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -31,7 +36,10 @@ function InitWebGL()
 	// Inicializar los shaders y buffers para renderizar	
 	boxDrawer  = new BoxDrawer();
 	meshDrawer = new MeshDrawer();
-	otherMeshDrawer = new MeshDrawer();
+	for (let indicePlaneta = 0; indicePlaneta < numberOfPlanets; indicePlaneta++) 
+	{
+		planetsMeshDrawer[indicePlaneta] = new MeshDrawer();
+	}
 	
 	// Setear el tamaño del viewport
 	UpdateCanvasSize();
@@ -89,14 +97,27 @@ function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
 	var mvp = GetModelViewProjection( perspectiveMatrix, sol.transX, sol.transY, sol.transZ, sol.scale, sol.rotX, autorot+sol.rotY );
-	var otherMvp = GetModelViewProjection( perspectiveMatrix, planeta.transX, planeta.transY, planeta.transZ, planeta.scale, planeta.rotX, autorot+planeta.rotY );
+	var planetMvp = [];
+	for (let indicePlaneta = 0; indicePlaneta < numberOfPlanets; indicePlaneta++) 
+	{
+		planetMvp[indicePlaneta] = GetModelViewProjection( perspectiveMatrix, 
+														  planetas[indicePlaneta].transX, 
+														  planetas[indicePlaneta].transY, 
+														  planetas[indicePlaneta].transZ, 
+														  planetas[indicePlaneta].scale, 
+														  planetas[indicePlaneta].rotX, 
+														  autorot+planetas[indicePlaneta].rotY );
+	}
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 		
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	meshDrawer.draw( mvp );
-	otherMeshDrawer.draw(otherMvp);
+	for (let indicePlaneta = 0; indicePlaneta < numberOfPlanets; indicePlaneta++) 
+	{
+		planetsMeshDrawer[indicePlaneta].draw( planetMvp[indicePlaneta] );
+	}
 	if ( showBox.checked ) 
 	{
 		boxDrawer.draw( mvp );
@@ -180,7 +201,8 @@ window.onload = function()
 	canvas.zoom = function( s ) 
 	{
 		sol.transZ *= s/canvas.height + 1;
-		planeta.transZ *= s/canvas.height + 1;
+		planetas[0].transZ *= s/canvas.height + 1;
+		planetas[1].transZ *= s/canvas.height + 1;
 		UpdateProjectionMatrix();
 		DrawScene();
 	}
@@ -263,7 +285,10 @@ function AutoRotate( param )
 function ShowTexture( param )
 {
 	meshDrawer.showTexture( param.checked );
-	otherMeshDrawer.showTexture( param.checked );
+	for (let indicePlaneta = 0; indicePlaneta < numberOfPlanets; indicePlaneta++) 
+	{
+		planetsMeshDrawer[indicePlaneta].showTexture( param.checked );
+	}
 	DrawScene();
 }
 
@@ -300,7 +325,10 @@ function LoadObj( param )
 			mesh.shiftAndScale( shift, scale );
 			var buffers = mesh.getVertexBuffers();
 			meshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
-			otherMeshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
+			for (let indicePlaneta = 0; indicePlaneta < numberOfPlanets; indicePlaneta++) 
+			{
+				planetsMeshDrawer[indicePlaneta].setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
+			}
 			DrawScene();
 		}
 		reader.readAsText( param.files[0] );
@@ -330,35 +358,39 @@ function LoadTexture( param )
 // Control de tamaño
 function SetSize( param )
 {
-	planeta.scale = param.value;
+	var indicePlaneta = parseInt(param.id.split("-")[2]);
+	planetas[indicePlaneta].scale = param.value;
 	DrawScene();
 }
 
 // Control de traslacion de planeta
-var timerRevolution;
-function RevolutionPlanet( param ){
+var timerRevolution=[];
+function RevolutionPlanet( param )
+{
+	var indicePlaneta = parseInt(param.id.split("-")[2]);
 	if ( param.checked ) 
 	{
-		timerRevolution = setInterval( function() 
+		timerRevolution[indicePlaneta] = setInterval( function() 
 			{
-				planeta.newPositioninOrbit( angleIncrement, sol.transX, sol.transZ );
+				planetas[indicePlaneta].newPositioninOrbit( angleIncrement[indicePlaneta], sol.transX, sol.transZ );
 
 				// Reenderizamos
 				DrawScene();
 
 			}, 30
 		);
-		document.getElementById('speed-value').disabled = false;
+		document.getElementById('speed-value-'+indicePlaneta.toString()).disabled = false;
 	}
 	else 
 	{
-		clearInterval( timerRevolution );
-		document.getElementById('speed-value').disabled = true;
+		clearInterval( timerRevolution[indicePlaneta] );
+		document.getElementById('speed-value-'+indicePlaneta.toString()).disabled = true;
 	}
 }
 
 // Control de velocidad de traslacion
 function SetSpeed( param )
 {
-	angleIncrement = parseFloat(param.value);
+	var indicePlaneta = parseInt(param.id.split("-")[2]);
+	angleIncrement[indicePlaneta] = parseFloat(param.value);
 }
