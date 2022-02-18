@@ -25,6 +25,7 @@
 				<div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita </label></div>
 				<div class="control"><input id="rotation-speed" type="range" min="1" max="100" value="50" disabled/></div>
 			</div>
+			<div id="near"></div>
 			<div class="control-group">
 				<div class="control">Modelo (.obj):<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>
 				<div class="control">Textura:<br/><input id="texture" type="file" onchange="LoadTexture(this)" accept="image/*"/></div>
@@ -33,14 +34,44 @@
 				<img id="texture-img" />
 			</div>
 			<div class="control-group">
-				<div class="control">Tamaño:<input id="size-value-0" type="range" min="0.5" max="1.5" step="0.25" oninput="SetSize(this)"/></div>
+				<div class="control">Tamaño0:<input id="size-value-0" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
 				<div class="control"><input id="revolution-planet-0" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-0" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
 			</div>
 			<div class="control-group">
-				<div class="control">Tamaño:<input id="size-value-1" type="range" min="0.5" max="1.5" step="0.25" oninput="SetSize(this)"/></div>
+				<div class="control">Tamaño1:<input id="size-value-1" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
 				<div class="control"><input id="revolution-planet-1" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-1" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño2:<input id="size-value-2" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-2" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-2" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño3:<input id="size-value-3" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-3" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-3" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño4:<input id="size-value-4" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-4" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-4" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño5:<input id="size-value-5" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-5" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-5" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño6:<input id="size-value-6" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-6" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-6" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
+			</div>
+			<div class="control-group">
+				<div class="control">Tamaño7:<input id="size-value-7" type="range" min="0.02" max="0.2" step="0.02" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="revolution-planet-7" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
+				<div class="control">Velocidad de traslacion:<input id="speed-value-7" type="range" min="0.1" max="1" step="0.1" oninput="SetSpeed(this)" disabled/></div>
 			</div>
 		</div>
 	</div>
