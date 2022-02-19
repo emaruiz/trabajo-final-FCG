@@ -8,14 +8,14 @@ var perspectiveMatrix;	// matriz de perspectiva
 
 var autorot=0; // rotaciones 
 var angleIncrement=[];
-angleIncrement[0] = 0.1;
-angleIncrement[1] = 0.1;
-angleIncrement[2] = 0.1;
-angleIncrement[3] = 0.1;
-angleIncrement[4] = 0.1;
-angleIncrement[5] = 0.1;
-angleIncrement[6] = 0.1;
-angleIncrement[7] = 0.1;
+angleIncrement[0] = 0.01;
+angleIncrement[1] = 0.01;
+angleIncrement[2] = 0.01;
+angleIncrement[3] = 0.01;
+angleIncrement[4] = 0.01;
+angleIncrement[5] = 0.01;
+angleIncrement[6] = 0.01;
+angleIncrement[7] = 0.01;
 
 var sun = new CelestialBody(0, 0, 3, 0.4, 0, 0, 0, 1);
 var planets=[];
