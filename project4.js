@@ -1,32 +1,35 @@
 // Estructuras globales e inicializaciones
 var boxDrawer;          // clase para contener el comportamiento de la caja
 var meshDrawer;         // clase para contener el comportamiento de la malla
-var numberOfPlanets=8;
-var planetsMeshDrawer=[];
+var numberOfCelestialBodys=9;
+var celestialBodysMeshDrawer=[];
 var canvas, gl;         // canvas y contexto WebGL
 var perspectiveMatrix;	// matriz de perspectiva
 
 var autorot=0; // rotaciones 
 var angleIncrement=[];
-angleIncrement[0] = 0.01;
-angleIncrement[1] = 0.01;
-angleIncrement[2] = 0.01;
-angleIncrement[3] = 0.01;
-angleIncrement[4] = 0.01;
-angleIncrement[5] = 0.01;
-angleIncrement[6] = 0.01;
-angleIncrement[7] = 0.01;
+for (let planetIndex = 1; planetIndex < numberOfCelestialBodys; planetIndex++) 
+{
+	angleIncrement[planetIndex-1] = 0.01;
+}
 
-var sun = new CelestialBody(0, 0, 3, 0.4, 0, 0, 0, 1);
-var planets=[];
-planets[0] = new CelestialBody(sun.transX+0.75+0.5*0, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*0);
-planets[1] = new CelestialBody(sun.transX+0.75+0.5*1, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*1);
-planets[2] = new CelestialBody(sun.transX+0.75+0.5*2, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*2);
-planets[3] = new CelestialBody(sun.transX+0.75+0.5*3, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*3);
-planets[4] = new CelestialBody(sun.transX+0.75+0.5*4, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*4);
-planets[5] = new CelestialBody(sun.transX+0.75+0.5*5, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*5);
-planets[6] = new CelestialBody(sun.transX+0.75+0.5*6, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*6);
-planets[7] = new CelestialBody(sun.transX+0.75+0.5*7, sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, 0.75+0.5*7);
+var celestialBodys=[];
+celestialBodys[0] = new CelestialBody(0, 0, 3, 0.4, 0, 0, 0, 1);
+var sun = celestialBodys[0];
+const distanceBetweenSunAndNearestPlanet = 0.75;
+const distanceBetweenPlanets = 0.5;
+for (let planetIndex = 1; planetIndex < numberOfCelestialBodys; planetIndex++) 
+{
+	let distanceBetweenSunAndPlanet = distanceBetweenSunAndNearestPlanet+distanceBetweenPlanets*(planetIndex-1);
+	celestialBodys[planetIndex] = new CelestialBody(sun.transX+distanceBetweenSunAndPlanet, 
+											 sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, distanceBetweenSunAndPlanet);
+}
+
+var imgs=[];
+for (let i = 0; i < numberOfCelestialBodys; i++) 
+{
+	imgs[i] = new Image();
+}
 
 // Funcion de inicialización, se llama al cargar la página
 function InitWebGL()
@@ -47,10 +50,9 @@ function InitWebGL()
 	
 	// Inicializar los shaders y buffers para renderizar	
 	boxDrawer  = new BoxDrawer();
-	meshDrawer = new MeshDrawer();
-	for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
 	{
-		planetsMeshDrawer[planetIndex] = new MeshDrawer();
+		celestialBodysMeshDrawer[i] = new MeshDrawer();
 	}
 	
 	// Setear el tamaño del viewport
@@ -102,38 +104,36 @@ function UpdateProjectionMatrix()
 		0, 0, (n+f)/(f-n), 1,
 		0, 0, -2*n*f/(f-n), 0
 	];
-	document.getElementById('near').innerHTML = n;
 }
 
 // Funcion que reenderiza la escena. 
 function DrawScene()
 {
 	// 1. Obtenemos las matrices de transformación 
-	var mvp = GetModelViewProjection( perspectiveMatrix, sun.transX, sun.transY, sun.transZ, sun.scale, sun.rotX, autorot+sun.rotY );
-	var planetsMvp = [];
-	for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+	let celestialsMvp = [];
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
 	{
-		planetsMvp[planetIndex] = GetModelViewProjection( perspectiveMatrix, 
-														  planets[planetIndex].transX, 
-														  planets[planetIndex].transY, 
-														  planets[planetIndex].transZ, 
-														  planets[planetIndex].scale, 
-														  planets[planetIndex].rotX, 
-														  autorot+planets[planetIndex].rotY );
+		celestialsMvp[i] = GetModelViewProjection( perspectiveMatrix, 
+													celestialBodys[i].transX, 
+													celestialBodys[i].transY, 
+													celestialBodys[i].transZ, 
+													celestialBodys[i].scale, 
+													celestialBodys[i].rotX, 
+													autorot+celestialBodys[i].rotY );
 	}
 
 	// 2. Limpiamos la escena
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 		
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
-	meshDrawer.draw( mvp );
-	for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
 	{
-		planetsMeshDrawer[planetIndex].draw( planetsMvp[planetIndex] );
+		celestialBodysMeshDrawer[i].setTexture( imgs[i] );
+		celestialBodysMeshDrawer[i].draw( celestialsMvp[i] );
 	}
 	if ( showBox.checked ) 
 	{
-		boxDrawer.draw( mvp );
+		boxDrawer.draw( celestialsMvp[0] );
 	}
 }
 
@@ -213,10 +213,9 @@ window.onload = function()
 	// Evento de zoom (ruedita)
 	canvas.zoom = function( s ) 
 	{
-		sun.transZ *= s/canvas.height + 1;
-		for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+		for (let i = 0; i < numberOfCelestialBodys; i++) 
 		{
-			planets[planetIndex].transZ *= s/canvas.height + 1;
+			celestialBodys[i].transZ *= s/canvas.height + 1;
 		}
 		UpdateProjectionMatrix();
 		DrawScene();
@@ -299,10 +298,9 @@ function AutoRotate( param )
 // Control de textura visible
 function ShowTexture( param )
 {
-	meshDrawer.showTexture( param.checked );
-	for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
 	{
-		planetsMeshDrawer[planetIndex].showTexture( param.checked );
+		celestialBodysMeshDrawer[i].showTexture( param.checked );
 	}
 	DrawScene();
 }
@@ -310,7 +308,7 @@ function ShowTexture( param )
 // Control de intercambiar y-z
 function SwapYZ( param )
 {
-	meshDrawer.swapYZ( param.checked );
+	celestialBodysMeshDrawer[0].swapYZ( param.checked );
 	DrawScene();
 }
 
@@ -339,10 +337,9 @@ function LoadObj( param )
 			var scale = 1/maxSize;
 			mesh.shiftAndScale( shift, scale );
 			var buffers = mesh.getVertexBuffers();
-			meshDrawer.setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
-			for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+			for (let i = 0; i < numberOfCelestialBodys; i++) 
 			{
-				planetsMeshDrawer[planetIndex].setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
+				celestialBodysMeshDrawer[i].setMesh( buffers.positionBuffer, buffers.texCoordBuffer );
 			}
 			DrawScene();
 		}
@@ -351,17 +348,18 @@ function LoadObj( param )
 }
 
 // Cargar textura
-function LoadTexture( param )
+function LoadTexture( param )//MODIFICAR DESDE ACA
 {
 	if ( param.files && param.files[0] ) 
 	{
 		var reader = new FileReader();
 		reader.onload = function(e) 
 		{
-			var img = document.getElementById('texture-img');
+			var celestialBodyIndex = parseInt( param.id.split("-")[1] );
+			var img = document.getElementById('texture-img-'+celestialBodyIndex.toString());
 			img.onload = function() 
 			{
-				meshDrawer.setTexture( img );
+				imgs[celestialBodyIndex] = img;
 				DrawScene();
 			}
 			img.src = e.target.result;
@@ -373,8 +371,8 @@ function LoadTexture( param )
 // Control de tamaño
 function SetSize( param )
 {
-	var planetIndex = parseInt( param.id.split("-")[2] );
-	planets[planetIndex].scale = parseFloat( param.value );
+	var celestialBodyIndex = parseInt( param.id.split("-")[2] );
+	celestialBodys[celestialBodyIndex].scale = parseFloat( param.value );
 	DrawScene();
 }
 
@@ -382,44 +380,44 @@ function SetSize( param )
 var timerRevolution=[];
 function RevolutionPlanet( param )
 {
-	var planetIndex = parseInt( param.id.split("-")[2] );
+	var planetIndex = parseInt( param.id.split("-")[2] )-1;
 	if ( param.checked ) 
 	{
 		timerRevolution[planetIndex] = setInterval( function() 
 			{
-				planets[planetIndex].newPositioninOrbit( angleIncrement[planetIndex], sun.transX, sun.transZ );
+				celestialBodys[planetIndex+1].newPositioninOrbit( angleIncrement[planetIndex], sun.transX, sun.transZ );
 
 				// Reenderizamos
 				DrawScene();
 
 			}, 30
 		);
-		document.getElementById('speed-value-'+planetIndex.toString()).disabled = false;
+		document.getElementById('speed-value-'+(planetIndex+1).toString()).disabled = false;
 	}
 	else 
 	{
 		clearInterval( timerRevolution[planetIndex] );
-		document.getElementById('speed-value-'+planetIndex.toString()).disabled = true;
+		document.getElementById('speed-value-'+(planetIndex+1).toString()).disabled = true;
 	}
 }
 
 // Control de velocidad de traslacion
 function SetSpeed( param )
 {
-	var planetIndex = parseInt( param.id.split("-")[2] );
+	var planetIndex = parseInt( param.id.split("-")[2] )-1;
 	angleIncrement[planetIndex] = parseFloat( param.value );
 }
 
-document.onkeydown = function (event)
+/*document.onkeydown = function (event)
 {
 	switch (event.keyCode)
 	{
 		case 37:
 			console.log("Left key is pressed.");
 			sun.transX += 0.1;
-			for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+			for (let planetIndex = 0; planetIndex < numberOfCelestialBodys; planetIndex++) 
 			{
-				planets[planetIndex].transX += 0.1;
+				celestialBodys[planetIndex].transX += 0.1;
 			}
 			DrawScene();
 			break;
@@ -429,9 +427,9 @@ document.onkeydown = function (event)
 		case 39:
 			console.log("Right key is pressed.");
 			sun.transX -= 0.1;
-			for (let planetIndex = 0; planetIndex < numberOfPlanets; planetIndex++) 
+			for (let planetIndex = 0; planetIndex < numberOfCelestialBodys; planetIndex++) 
 			{
-				planets[planetIndex].transX -= 0.1;
+				celestialBodys[planetIndex].transX -= 0.1;
 			}
 			DrawScene();
 			break;
@@ -439,4 +437,4 @@ document.onkeydown = function (event)
 			console.log("Down key is pressed.");
 			break;
 	}
-};
+};*/
