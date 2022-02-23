@@ -103,7 +103,6 @@ class MeshDrawer
 		
 		// 2. Obtenemos los IDs de las variables uniformes en los shaders
 		this.mvp = gl.getUniformLocation( this.prog, 'mvp' );
-
 		this.yz_swap = gl.getUniformLocation(this.prog, 'yz_swap'); 
 		this.show_texture = gl.getUniformLocation(this.prog, 'show_texture'); 
 		
@@ -118,6 +117,9 @@ class MeshDrawer
 
 		// 6. Creo un buffer para alamcenar mapeo de vertice a texture
 		this.vTexCoord_buffer = gl.createBuffer();
+		
+		// 7. Variable que guarda la textura actual 
+		this.textura;
 	}
 	
 	// Esta función se llama cada vez que el usuario carga un nuevo archivo OBJ.
@@ -186,36 +188,47 @@ class MeshDrawer
 		gl.drawArrays( gl.TRIANGLES, 0, this.numVertexes );
 	}
 	
-	// Esta función se llama para setear una textura sobre la malla
-	// El argumento es un componente <img> de html que contiene la textura.
-
-	// Idea: Me falta establecer el atributo uniforme que almacena 
-	// la textura misma. Ya pase el mapeo por atributo varying.
-	setTexture( img )
+	// Esta función se llama para setear una nueva textura sobre la malla
+	// Un argumento es un componente <img> de html que contiene la textura.
+	// El otro indica el numero de unidad de textura a usar.
+	setNewTexture( newImg, texUnitNum )
 	{
 		//Creo un buffer para almacenar la textura
-		const textura = gl.createTexture();
+		this.textura = gl.createTexture();
 		
 		//Binding del buffer y le seteo una textura
-		gl.bindTexture( gl.TEXTURE_2D, textura );
+		gl.bindTexture( gl.TEXTURE_2D, this.textura );
 		gl.texImage2D( gl.TEXTURE_2D,
 		0,
 		gl.RGB,
 		gl.RGB,
 		gl.UNSIGNED_BYTE,
-		img );
+		newImg );
 
 		//Genero los mipmaps de la textura del ultimo buffer bindeado
 		gl.generateMipmap( gl.TEXTURE_2D );
 
 		//Hago uso de la Texture Unit 0 y le comunico la textura a usar
-		gl.activeTexture( gl.TEXTURE0 );
-		gl.bindTexture( gl.TEXTURE_2D, textura );
+		gl.activeTexture( gl.TEXTURE0 + texUnitNum );
+		gl.bindTexture( gl.TEXTURE_2D, this.textura );
+		//}
 		
 		//Obtenemos ubicacion de una variable uniforme y le seteo el contenido de Texture Unit 0
 		var sampler = gl.getUniformLocation(this.prog, 'texGPU');
 		gl.useProgram(this.prog);
-		gl.uniform1i(sampler, 0);
+		gl.uniform1i(sampler, texUnitNum);
+	}
+	
+	// Esta función se llama para setear textura ya guadada sobre la malla
+	// El argumento indica el numero de unidad de textura a usar.
+	setPreviousTexture( texUnitNum )
+	{
+		gl.activeTexture( gl.TEXTURE0 + texUnitNum );
+		gl.bindTexture( gl.TEXTURE_2D, this.textura );
+		
+		var sampler = gl.getUniformLocation(this.prog, 'texGPU');
+		gl.useProgram(this.prog);
+		gl.uniform1i(sampler, texUnitNum);
 	}
 	
 	// Esta función se llama cada vez que el usuario cambia el estado del checkbox 'Mostrar textura'

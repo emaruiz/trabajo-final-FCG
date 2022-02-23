@@ -1,19 +1,18 @@
 // Estructuras globales e inicializaciones
-var boxDrawer;          // clase para contener el comportamiento de la caja
-var meshDrawer;         // clase para contener el comportamiento de la malla
-var numberOfCelestialBodys=9;
-var celestialBodysMeshDrawer=[];
-var canvas, gl;         // canvas y contexto WebGL
-var perspectiveMatrix;	// matriz de perspectiva
+var boxDrawer;                   // clase para contener el comportamiento de la caja
+var numberOfCelestialBodys=9;    // cantidad de cuerpos celestes a dibujar
+var celestialBodysMeshDrawer=[]; // arreglo con clase para contener el comportamiento de la malla de los cuerpos celestes
+var canvas, gl;                  // canvas y contexto WebGL
+var perspectiveMatrix;	         // matriz de perspectiva
 
-var autorot=0; // rotaciones 
-var angleIncrement=[];
+var autorot=0; // rotacion sobre un eje de un cuerpo celeste
+var angleIncrement=[]; // arreglo de incrementos de angulo correspondientes al mov. circular de cuerpos celestes
 for (let planetIndex = 1; planetIndex < numberOfCelestialBodys; planetIndex++) 
 {
 	angleIncrement[planetIndex-1] = 0.01;
 }
 
-var celestialBodys=[];
+var celestialBodys=[]; // arreglo con clase para contener el comportamiento de los cuepos celestes
 celestialBodys[0] = new CelestialBody(0, 0, 3, 0.4, 0, 0, 0, 1);
 var sun = celestialBodys[0];
 const distanceBetweenSunAndNearestPlanet = 0.75;
@@ -25,7 +24,7 @@ for (let planetIndex = 1; planetIndex < numberOfCelestialBodys; planetIndex++)
 											 sun.transY, sun.transZ, 0.20, sun.rotX, sun.rotY, 0, distanceBetweenSunAndPlanet);
 }
 
-var imgs=[];
+var imgs=[]; // arreglo de imagenes correspondientes a los cuerpos celestes
 for (let i = 0; i < numberOfCelestialBodys; i++) 
 {
 	imgs[i] = new Image();
@@ -128,7 +127,37 @@ function DrawScene()
 	// 3. Le pedimos a cada objeto que se dibuje a si mismo
 	for (let i = 0; i < numberOfCelestialBodys; i++) 
 	{
-		celestialBodysMeshDrawer[i].setTexture( imgs[i] );
+		celestialBodysMeshDrawer[i].setPreviousTexture( i );
+		celestialBodysMeshDrawer[i].draw( celestialsMvp[i] );
+	}
+	if ( showBox.checked ) 
+	{
+		boxDrawer.draw( celestialsMvp[0] );
+	}
+}
+
+function DrawSceneWithNewTexture()
+{
+	// 1. Obtenemos las matrices de transformación 
+	let celestialsMvp = [];
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
+	{
+		celestialsMvp[i] = GetModelViewProjection( perspectiveMatrix, 
+													celestialBodys[i].transX, 
+													celestialBodys[i].transY, 
+													celestialBodys[i].transZ, 
+													celestialBodys[i].scale, 
+													celestialBodys[i].rotX, 
+													autorot+celestialBodys[i].rotY );
+	}
+
+	// 2. Limpiamos la escena
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+		
+	// 3. Le pedimos a cada objeto que se dibuje a si mismo
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
+	{
+		celestialBodysMeshDrawer[i].setNewTexture( imgs[i], i );
 		celestialBodysMeshDrawer[i].draw( celestialsMvp[i] );
 	}
 	if ( showBox.checked ) 
@@ -348,7 +377,7 @@ function LoadObj( param )
 }
 
 // Cargar textura
-function LoadTexture( param )//MODIFICAR DESDE ACA
+function LoadTexture( param )
 {
 	if ( param.files && param.files[0] ) 
 	{
@@ -360,7 +389,7 @@ function LoadTexture( param )//MODIFICAR DESDE ACA
 			img.onload = function() 
 			{
 				imgs[celestialBodyIndex] = img;
-				DrawScene();
+				DrawSceneWithNewTexture();
 			}
 			img.src = e.target.result;
 		};
@@ -407,34 +436,3 @@ function SetSpeed( param )
 	var planetIndex = parseInt( param.id.split("-")[2] )-1;
 	angleIncrement[planetIndex] = parseFloat( param.value );
 }
-
-/*document.onkeydown = function (event)
-{
-	switch (event.keyCode)
-	{
-		case 37:
-			console.log("Left key is pressed.");
-			sun.transX += 0.1;
-			for (let planetIndex = 0; planetIndex < numberOfCelestialBodys; planetIndex++) 
-			{
-				celestialBodys[planetIndex].transX += 0.1;
-			}
-			DrawScene();
-			break;
-		case 38:
-			console.log("Up key is pressed.");
-			break;
-		case 39:
-			console.log("Right key is pressed.");
-			sun.transX -= 0.1;
-			for (let planetIndex = 0; planetIndex < numberOfCelestialBodys; planetIndex++) 
-			{
-				celestialBodys[planetIndex].transX -= 0.1;
-			}
-			DrawScene();
-			break;
-		case 40:
-			console.log("Down key is pressed.");
-			break;
-	}
-};*/
