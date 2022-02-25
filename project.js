@@ -337,7 +337,10 @@ function ShowTexture( param )
 // Control de intercambiar y-z
 function SwapYZ( param )
 {
-	celestialBodysMeshDrawer[0].swapYZ( param.checked );
+	for (let i = 0; i < numberOfCelestialBodys; i++) 
+	{
+		celestialBodysMeshDrawer[i].swapYZ( param.checked );
+	}
 	DrawScene();
 }
 

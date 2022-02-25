@@ -1,8 +1,8 @@
 
 html {
     color: white;
-    background-color: rgb(22, 5, 41);
-    /*background: url(star.jpg);*/ /* Buscar otro tile*/
+    /*background-color: rgb(22, 5, 41);*/
+    background: url(stars-tile.png);
     font-family: 'Courier New';
     overflow: hidden;
 }
@@ -43,6 +43,7 @@ canvas {
 
 #controls {
     padding: 1em;
+    border: 0.2em solid rgb(99, 31, 126);
 }
 
 .control-group {
