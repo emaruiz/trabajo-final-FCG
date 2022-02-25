@@ -19,18 +19,18 @@
 		<!-- menu y controles-->
 		<div id="controls">
 			<div class="control-group all-objects">
-				<div class="control"><input id="show-box" name="show-box" type="checkbox" onchange="DrawScene()" checked /><label for="show-box"> Mostrar caja</label></div>
-				<div class="control"><input id="show-texture" name="show-texture" type="checkbox" onchange="ShowTexture(this)" checked /><label for="show-texture"> Mostrar textura </label></div>
+				<div class="control"><input id="show-texture" name="show-texture" type="checkbox" onchange="ShowTexture(this)" /><label for="show-texture"> Mostrar textura </label></div>
 				<div class="control"><input id="swap-yz" name="swap-yz" type="checkbox" onchange="SwapYZ(this)" /><label for="swap-yz"> Intercambiar Y-Z </label></div>
-				<div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Calesita </label></div>
+				<div class="control"><input id="auto-rotate" name="auto-rotate" type="checkbox" onchange="AutoRotate(this)"/><label for="auto-rotate"> Rotar sobre eje Y </label></div>
 				<div class="control"><input id="rotation-speed" type="range" min="1" max="100" value="50" disabled/></div>
 				<div class="control">Modelo (.obj):<br/><input id="obj" type="file" onchange="LoadObj(this)" accept=".obj"/></div>
 			</div>
 			<div class="control-group">
 				<div class="control">Textura 0:<br/><input id="texture-0" type="file" onchange="LoadTexture(this)" accept="image/*"/></div>
 				<div class="control">Tamaño:<input id="size-value-0" type="range" min="0.04" max="0.4" step="0.04" oninput="SetSize(this)"/></div>
+				<div class="control"><input id="show-box" name="show-box" type="checkbox" onchange="DrawScene()" checked /><label for="show-box"> Mostrar caja</label></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-0" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -39,7 +39,7 @@
 				<div class="control"><input id="revolution-planet-1" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-1" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-1" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -48,7 +48,7 @@
 				<div class="control"><input id="revolution-planet-2" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-2" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-2" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -57,7 +57,7 @@
 				<div class="control"><input id="revolution-planet-3" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-3" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-3" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -66,7 +66,7 @@
 				<div class="control"><input id="revolution-planet-4" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-4" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-4" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -75,7 +75,7 @@
 				<div class="control"><input id="revolution-planet-5" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-5" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-5" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -84,7 +84,7 @@
 				<div class="control"><input id="revolution-planet-6" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-6" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-6" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -93,7 +93,7 @@
 				<div class="control"><input id="revolution-planet-7" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-7" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-7" class="texture-img" />
 			</div>
 			<div class="control-group">
@@ -102,7 +102,7 @@
 				<div class="control"><input id="revolution-planet-8" name="revolution-planet" type="checkbox" onchange="RevolutionPlanet(this)"/><label for="revolution-planet"> Traslación de planeta </label></div>
 				<div class="control">Velocidad de traslacion:<input id="speed-value-8" type="range" min="0.01" max="0.1" step="0.01" oninput="SetSpeed(this)" disabled/></div>
 			</div>
-			<div class="control-group">
+			<div class="control-group texture-included">
 				<img id="texture-img-8" class="texture-img" />
 			</div>
 		</div>

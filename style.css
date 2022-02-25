@@ -2,6 +2,7 @@
 html {
     color: white;
     background-color: rgb(22, 5, 41);
+    /*background: url(star.jpg);*/ /* Buscar otro tile*/
     font-family: 'Courier New';
     overflow: hidden;
 }
@@ -66,6 +67,9 @@ canvas {
     .control-group {
         margin-top: 1em;
         overflow: hidden;
+    }
+    .texture-included {
+        margin-top: 0px;
     }
     .texture-img {
         width: 85%;
